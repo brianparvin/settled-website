@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Settled — Make your case. Let the jury decide.</title>
-<meta name="description" content="Settled turns everyday arguments into a quick case your friends can judge. Both sides get equal space, the jury votes, and the verdict is in. Coming soon to iPhone.">
+<meta name="description" content="Settled turns everyday arguments into a quick case your friends can judge. Both sides get equal space, the jury votes, and the verdict is in. Coming soon to iPhone from Sidebar Interactive LLC.">
 <link rel="canonical" href="https://settled.social/">
 <meta name="theme-color" content="#5922D8">
 
@@ -74,8 +74,10 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-.015em;line-height:1.1}
 .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--pink-500);
   box-shadow:0 0 0 0 rgba(253,57,117,.6);animation:ping 1.8s infinite}
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(253,57,117,.55)}80%,100%{box-shadow:0 0 0 10px rgba(253,57,117,0)}}
-.toplink{font-weight:600;font-size:15px;color:var(--muted);text-decoration:none}
-.toplink:hover{color:var(--action)}
+.topnav{display:flex;align-items:center;gap:4px 18px;flex-wrap:wrap}
+.topnav a{font-family:var(--font-display);font-weight:800;font-size:15px;color:var(--muted);text-decoration:none}
+.topnav a:hover{color:var(--action)}
+.toplink{color:var(--violet-600)!important}
 
 .hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center}
 .logo{width:min(340px,78vw);height:auto;margin:0 0 22px -8px;filter:drop-shadow(0 10px 18px rgba(29,13,61,.12))}
@@ -166,6 +168,18 @@ section{padding:84px 0}
 .cat{font-family:var(--font-display);font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
   padding:8px 14px;border-radius:var(--r-full)}
 
+/* company */
+.company{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center;background:var(--surface);
+  border:1px solid var(--border);border-radius:36px;padding:48px;box-shadow:var(--e2)}
+.company-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.company-links a{font-family:var(--font-display);font-weight:800;font-size:14px;text-decoration:none;color:var(--violet-700);
+  background:var(--violet-50);border:1px solid var(--violet-100);padding:8px 14px;border-radius:var(--r-full)}
+.company-links a:hover{background:var(--violet-100)}
+.facts{display:grid;grid-template-columns:max-content 1fr;gap:12px 20px;background:var(--n-50);border-radius:var(--r-lg);
+  padding:24px;font-size:16px;border:1px solid var(--border)}
+.facts dt{font-weight:650;color:var(--muted)}
+.facts dd{margin:0;font-weight:600}
+
 /* final cta */
 .cta{background:var(--surface);border-radius:36px;padding:56px 32px;box-shadow:var(--e3);border:1px solid var(--border)}
 .cta .signup{margin:26px auto 0}
@@ -177,6 +191,7 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
 .foot a{color:var(--muted);text-decoration:none;font-weight:600}
 .foot a:hover{color:var(--action)}
 .foot .note{flex-basis:100%;font-size:13px}
+.foot-links{display:flex;flex-wrap:wrap;gap:6px 20px}
 
 /* ---------- Responsive ---------- */
 @media (max-width:960px){
@@ -189,19 +204,23 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
   .phone{width:210px}.phone.p2{width:232px}
   .steps{grid-template-columns:1fr 1fr}
   .ways{padding:48px 28px}
+  .company{grid-template-columns:1fr}
 }
 @media (max-width:640px){
   .wrap{padding:0 16px}
   .topbar{margin-bottom:18px}
   .toplink{display:none}
-  .topbar{justify-content:center}
+  .topbar{justify-content:center;flex-direction:column;gap:12px}
   .signup{flex-direction:column;border-radius:var(--r-lg)}
   .signup input{padding:12px 12px;text-align:center}
   .phones{height:420px}
   .phone{width:160px}.phone.p2{width:185px}
   .phone.p1{left:-2%;top:56px}.phone.p3{right:-2%;top:56px}
   .sticker{font-size:13px;padding:8px 12px}
-  .steps,.ways-grid,.fair-grid{grid-template-columns:1fr}
+  .steps,.ways-grid,.fair-grid,.company{grid-template-columns:1fr}
+  .company{padding:28px 20px;border-radius:28px}
+  .facts{grid-template-columns:1fr;gap:2px}
+  .facts dd{margin-bottom:10px}
   section{padding:60px 0}
   .ways,.cta{border-radius:28px}
   .ways{padding:40px 20px}
@@ -216,7 +235,11 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
   <div class="wrap">
     <div class="topbar">
       <span class="pill"><span class="dot" aria-hidden="true"></span>Coming soon to iPhone</span>
-      <a class="toplink" href="#waitlist">Join the waitlist →</a>
+      <nav class="topnav" aria-label="Main">
+        <a href="/about/">About</a>
+        <a href="/support/">Support</a>
+        <a class="toplink" href="#waitlist">Join the waitlist →</a>
+      </nav>
     </div>
     <div class="hero-grid">
       <div>
@@ -230,7 +253,7 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
           <button class="btn" type="submit">Get early access</button>
         </form>
         <p class="form-msg" role="status" aria-live="polite"></p>
-        <p class="fineprint">One email when we launch. No spam, ever.</p>
+        <p class="fineprint">One email when we launch. No spam, ever. <a href="/privacy/">Privacy</a></p>
       </div>
       <div class="phones" aria-hidden="true">
         <img class="phone p1" src="/assets/screen-home.webp" alt="" width="640" height="1184" loading="eager">
@@ -311,7 +334,7 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
       <h2 class="sec-title">Friendly fights only</h2>
       <p class="sec-lede">Settled is for the small stuff that turns into big debates, built so both people walk away feeling heard.</p>
       <div class="fair-grid" style="text-align:left">
-        <div class="fair"><h3>Equal space for both sides</h3><p>Same room to make your case, same visibility, and an optional rebuttal round.</p></div>
+        <div class="fair"><h3>Equal space for both sides</h3><p>Same room to make your case, same visibility, and a neutral summary of both.</p></div>
         <div class="fair"><h3>You choose the jury</h3><p>Cases are decided by people you invite, not by strangers scrolling past.</p></div>
         <div class="fair"><h3>Kept kind</h3><p>No harassment, no doxxing, no legal claims. Content is moderated, and anything can be reported.</p></div>
       </div>
@@ -323,6 +346,25 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
         <span class="cat" style="background:var(--n-100);color:var(--n-600)">Work</span>
         <span class="cat" style="background:var(--pink-50);color:var(--pink-700)">Sports debates</span>
         <span class="cat" style="background:var(--cyan-50);color:var(--cyan-700)">Hot takes</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="company" style="padding-top:10px">
+    <div class="wrap">
+      <div class="company">
+        <div>
+          <p class="eyebrow">Who’s behind Settled</p>
+          <h2 class="sec-title">Built by Sidebar Interactive</h2>
+          <p class="sec-lede">Settled is designed, built, and operated by Sidebar Interactive LLC, an independent software company based in California. We’re building the first version of Settled now, and we’d love your feedback along the way.</p>
+          <p class="company-links"><a href="/about/">About the company</a><a href="/support/">Support &amp; FAQ</a><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Use</a></p>
+        </div>
+        <dl class="facts">
+          <dt>Company</dt><dd>Sidebar Interactive LLC</dd>
+          <dt>Based in</dt><dd>California, USA</dd>
+          <dt>Product</dt><dd>Settled for iPhone</dd>
+          <dt>Contact</dt><dd><a href="mailto:hello@settled.social">hello@settled.social</a></dd>
+        </dl>
       </div>
     </div>
   </section>
@@ -347,9 +389,15 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
 
 <footer>
   <div class="wrap foot">
-    <span>© <span id="yr">2026</span> Settled</span>
-    <span><a href="mailto:hello@settled.social">hello@settled.social</a></span>
-    <p class="note">Settled is for everyday disagreements and friendly debates. It doesn’t provide legal advice, and verdicts are just for fun. We’ll only use your email to tell you when we launch.</p>
+    <span>© <span id="yr">2026</span> Sidebar Interactive LLC. Settled is a product of Sidebar Interactive LLC.</span>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="/about/">About</a>
+      <a href="/support/">Support</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/terms/">Terms</a>
+      <a href="mailto:hello@settled.social">hello@settled.social</a>
+    </nav>
+    <p class="note">Settled is for everyday disagreements and friendly debates. It doesn’t provide legal advice, and verdicts are just for fun. We’ll only use your email to tell you when we launch. See our <a href="/privacy/">Privacy Policy</a>.</p>
   </div>
 </footer>
 
