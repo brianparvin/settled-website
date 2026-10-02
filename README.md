@@ -1,4 +1,4 @@
-# settled.social — coming soon page
+# settled.social — website for Settled (Sidebar Interactive LLC)
 
 Static site for GitHub Pages. No build step: `index.html` + `assets/`.
 
@@ -6,11 +6,12 @@ Static site for GitHub Pages. No build step: `index.html` + `assets/`.
 |---|---|
 | `index.html` | The page (styles and script inline) |
 | `404.html` | Branded not-found page |
+| `about/`, `support/`, `privacy/`, `terms/` | Company and legal pages (shared styles in `assets/site.css`) |
 | `CNAME` | Tells GitHub Pages to serve `settled.social` |
 | `.nojekyll` | Skip Jekyll processing |
 | `assets/` | Logo, app screens, favicons, social share image (`og-image.png`, 1200×630) |
 
-## Waitlist form
+## Updates sign-up form
 
 Both email forms post to `https://formspree.io/f/YOUR_FORM_ID`. Until that ID is replaced,
 submitting opens a pre-filled email to hello@settled.social instead, so nothing breaks.
