@@ -93,6 +93,8 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-.015em;line-height:1.1}
   padding:10px 8px 10px 18px;color:var(--text)}
 .signup input::placeholder{color:#8E8A9E}
 .signup .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.ts{margin-top:10px;max-width:470px}.ts:empty{display:none}
+.cta .ts{margin-left:auto;margin-right:auto}
 .btn{font-family:var(--font-display);font-weight:800;font-size:16px;border:0;cursor:pointer;
   border-radius:var(--r-full);padding:14px 22px;background:var(--action);color:var(--on-action);
   box-shadow:var(--e4);transition:transform .15s ease, background .15s ease;white-space:nowrap}
@@ -407,6 +409,32 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
 
+// Cloudflare Turnstile, the bot check the API verifies. Public: it's the
+// site key, not the secret. Empty: no widget, and the API must not require
+// one yet (TURNSTILE_SECRET_KEY unset).
+var TURNSTILE_SITE_KEY = '';
+var widgets = new Map();
+
+if (TURNSTILE_SITE_KEY) {
+  window.onTurnstileLoad = function () {
+    document.querySelectorAll('.js-signup').forEach(function (form) {
+      var slot = document.createElement('div');
+      slot.className = 'ts';
+      form.nextElementSibling.after(slot);
+      widgets.set(form, turnstile.render(slot, {
+        sitekey: TURNSTILE_SITE_KEY,
+        action: 'waitlist',
+        appearance: 'interaction-only',
+        size: 'flexible'
+      }));
+    });
+  };
+  var ts = document.createElement('script');
+  ts.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad';
+  ts.async = true;
+  document.head.appendChild(ts);
+}
+
 document.querySelectorAll('.js-signup').forEach(function (form) {
   var msg = form.nextElementSibling;
   var btn = form.querySelector('button');
@@ -421,6 +449,13 @@ document.querySelectorAll('.js-signup').forEach(function (form) {
       form.email.focus();
       return;
     }
+    var token = widgets.has(form) ? turnstile.getResponse(widgets.get(form)) : '';
+    if (TURNSTILE_SITE_KEY && !token) {
+      msg.textContent = 'Still checking you’re a person. Try again in a moment.';
+      msg.classList.add('err');
+      return;
+    }
+    msg.textContent = '';
     btn.disabled = true;
     var label = btn.textContent;
     btn.textContent = 'Joining…';
@@ -430,24 +465,29 @@ document.querySelectorAll('.js-signup').forEach(function (form) {
     fetch(form.action, {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, source: form.source.value, website: form.website.value }),
+      body: JSON.stringify({ email: email, source: form.source.value, website: form.website.value, turnstile_token: token }),
       signal: controller.signal
     }).then(function (r) {
       if (r.ok) return;
       // The API's errors are { code, message }, and message is written for people.
       return r.json().catch(function () { return {}; }).then(function (body) {
-        throw new Error(body.message || '');
+        var err = new Error(body.message || '');
+        err.fromApi = true;
+        throw err;
       });
     }).then(function () {
       form.reset();
       msg.textContent = 'You’re on the list. Watch your inbox for a TestFlight invite. 🎉';
       msg.classList.add('ok');
     }).catch(function (err) {
-      msg.textContent = (err && err.name !== 'AbortError' && err.message) ||
+      // Only the API's own messages are shown; network errors aren't for people.
+      msg.textContent = (err && err.fromApi && err.message) ||
         'Something went wrong. Try again, or email hello@settled.social.';
       msg.classList.add('err');
     }).finally(function () {
       clearTimeout(timer);
+      // Tokens are single use.
+      if (widgets.has(form)) turnstile.reset(widgets.get(form));
       btn.disabled = false;
       btn.textContent = label;
     });

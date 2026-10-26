@@ -21,6 +21,10 @@ Postgres. Approving someone sends them a TestFlight invite
 so the form only works when served from `settled.social`. The hidden `website`
 field is a honeypot; leave it hidden.
 
+Bot check: Cloudflare Turnstile. Put the widget's **site key** (public) in
+`TURNSTILE_SITE_KEY` in `index.html`'s script; the secret key goes only in the
+API's Key Vault. Ship the site key before the API starts requiring tokens.
+
 ## Deploy
 
 1. Create a public GitHub repo (e.g. `settled-website`) and push this folder to `main`.
