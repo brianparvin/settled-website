@@ -451,7 +451,7 @@ document.querySelectorAll('.js-signup').forEach(function (form) {
     }
     var token = widgets.has(form) ? turnstile.getResponse(widgets.get(form)) : '';
     if (TURNSTILE_SITE_KEY && !token) {
-      msg.textContent = 'Still checking you’re a person. Try again in a moment.';
+      msg.textContent = 'Still checking you’re a person. If a checkbox appears below, tick it, then try again.';
       msg.classList.add('err');
       return;
     }
