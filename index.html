@@ -86,12 +86,15 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-.015em;line-height:1.1}
 .hero h1 .b{color:var(--violet-600)}
 .lede{font-size:clamp(17px,1.6vw,20px);color:var(--muted);max-width:34ch;margin-bottom:28px}
 
-/* updates signup */
+/* beta signup */
 .signup{display:flex;gap:10px;max-width:470px;background:var(--surface);padding:8px;border-radius:var(--r-full);
   box-shadow:var(--e3);border:1px solid var(--border)}
 .signup input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:16px;
   padding:10px 8px 10px 18px;color:var(--text)}
 .signup input::placeholder{color:#8E8A9E}
+.signup .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.ts{margin-top:10px;max-width:470px}.ts:empty{display:none}
+.cta .ts{margin-left:auto;margin-right:auto}
 .btn{font-family:var(--font-display);font-weight:800;font-size:16px;border:0;cursor:pointer;
   border-radius:var(--r-full);padding:14px 22px;background:var(--action);color:var(--on-action);
   box-shadow:var(--e4);transition:transform .15s ease, background .15s ease;white-space:nowrap}
@@ -238,7 +241,7 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
       <nav class="topnav" aria-label="Main">
         <a href="/about/">About</a>
         <a href="/support/">Support</a>
-        <a class="toplink" href="#updates">Get updates →</a>
+        <a class="toplink" href="#beta">Join the beta →</a>
       </nav>
     </div>
     <div class="hero-grid">
@@ -246,14 +249,15 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
         <img class="logo" src="/assets/logo.png" width="420" height="292" alt="Settled">
         <h1><span class="a">Make your case.</span><br><span class="b">Let the jury decide.</span></h1>
         <p class="lede">Settled turns everyday arguments into a quick case your friends can judge. Both sides get equal space. The jury votes. Done.</p>
-        <form class="signup js-signup" id="updates" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+        <form class="signup js-signup" id="beta" action="https://ca-settled-dev-api.gentletree-18117bf7.centralus.azurecontainerapps.io/v1/waitlist" method="POST" novalidate>
           <label for="email1" class="sr" style="position:absolute;left:-9999px">Email address</label>
           <input id="email1" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
           <input type="hidden" name="source" value="hero">
-          <button class="btn" type="submit">Get updates</button>
+          <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn" type="submit">Join the beta</button>
         </form>
         <p class="form-msg" role="status" aria-live="polite"></p>
-        <p class="fineprint">Occasional product news from Settled. No spam, ever. <a href="/privacy/">Privacy</a></p>
+        <p class="fineprint">We’ll email you a TestFlight invite as beta spots open. No spam, ever. <a href="/privacy/">Privacy</a></p>
       </div>
       <div class="phones" aria-hidden="true">
         <img class="phone p1" src="/assets/screen-home.webp" alt="" width="640" height="1184" loading="eager">
@@ -372,14 +376,15 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
   <section id="join" style="padding-top:10px">
     <div class="wrap">
       <div class="cta center">
-        <p class="eyebrow">Stay in the loop</p>
+        <p class="eyebrow">Try it first</p>
         <h2 class="sec-title">Got an argument waiting?</h2>
-        <p class="sec-lede">Sign up for Settled news: new features, App Store availability, and the occasional verdict worth sharing.</p>
-        <form class="signup js-signup" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+        <p class="sec-lede">Join the Settled beta. We’ll send you an invite to install it through Apple’s TestFlight as spots open.</p>
+        <form class="signup js-signup" action="https://ca-settled-dev-api.gentletree-18117bf7.centralus.azurecontainerapps.io/v1/waitlist" method="POST" novalidate>
           <label for="email2" style="position:absolute;left:-9999px">Email address</label>
           <input id="email2" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
           <input type="hidden" name="source" value="footer">
-          <button class="btn" type="submit">Notify me</button>
+          <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn" type="submit">Join the beta</button>
         </form>
         <p class="form-msg" role="status" aria-live="polite"></p>
       </div>
@@ -397,17 +402,42 @@ footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
       <a href="/terms/">Terms</a>
       <a href="mailto:hello@settled.social">hello@settled.social</a>
     </nav>
-    <p class="note">Settled is for everyday disagreements and friendly debates. It doesn’t provide legal advice, and verdicts are just for fun. We’ll only use your email to send Settled updates. See our <a href="/privacy/">Privacy Policy</a>.</p>
+    <p class="note">Settled is for everyday disagreements and friendly debates. It doesn’t provide legal advice, and verdicts are just for fun. We’ll only use your email for your beta invite and Settled news. See our <a href="/privacy/">Privacy Policy</a>.</p>
   </div>
 </footer>
 
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
 
+// Cloudflare Turnstile, the bot check the API verifies. Public: it's the
+// site key, not the secret. Empty: no widget, and the API must not require
+// one yet (TURNSTILE_SECRET_KEY unset).
+var TURNSTILE_SITE_KEY = '';
+var widgets = new Map();
+
+if (TURNSTILE_SITE_KEY) {
+  window.onTurnstileLoad = function () {
+    document.querySelectorAll('.js-signup').forEach(function (form) {
+      var slot = document.createElement('div');
+      slot.className = 'ts';
+      form.nextElementSibling.after(slot);
+      widgets.set(form, turnstile.render(slot, {
+        sitekey: TURNSTILE_SITE_KEY,
+        action: 'waitlist',
+        appearance: 'interaction-only',
+        size: 'flexible'
+      }));
+    });
+  };
+  var ts = document.createElement('script');
+  ts.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad';
+  ts.async = true;
+  document.head.appendChild(ts);
+}
+
 document.querySelectorAll('.js-signup').forEach(function (form) {
   var msg = form.nextElementSibling;
   var btn = form.querySelector('button');
-  var configured = form.action.indexOf('YOUR_FORM_ID') === -1;
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -419,29 +449,45 @@ document.querySelectorAll('.js-signup').forEach(function (form) {
       form.email.focus();
       return;
     }
-    // Until a form service is connected, fall back to a pre-filled email.
-    if (!configured) {
-      window.location.href = 'mailto:hello@settled.social?subject=' +
-        encodeURIComponent('Settled updates') + '&body=' +
-        encodeURIComponent('Please send Settled updates to: ' + email);
+    var token = widgets.has(form) ? turnstile.getResponse(widgets.get(form)) : '';
+    if (TURNSTILE_SITE_KEY && !token) {
+      msg.textContent = 'Still checking you’re a person. Try again in a moment.';
+      msg.classList.add('err');
       return;
     }
+    msg.textContent = '';
     btn.disabled = true;
     var label = btn.textContent;
     btn.textContent = 'Joining…';
+    // The API can take half a minute to wake up, so wait that long.
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 45000);
     fetch(form.action, {
       method: 'POST',
-      body: new FormData(form),
-      headers: { 'Accept': 'application/json' }
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, source: form.source.value, website: form.website.value, turnstile_token: token }),
+      signal: controller.signal
     }).then(function (r) {
-      if (!r.ok) throw new Error();
+      if (r.ok) return;
+      // The API's errors are { code, message }, and message is written for people.
+      return r.json().catch(function () { return {}; }).then(function (body) {
+        var err = new Error(body.message || '');
+        err.fromApi = true;
+        throw err;
+      });
+    }).then(function () {
       form.reset();
-      msg.textContent = 'You’re on the list. Case closed. 🎉';
+      msg.textContent = 'You’re on the list. Watch your inbox for a TestFlight invite. 🎉';
       msg.classList.add('ok');
-    }).catch(function () {
-      msg.textContent = 'Something went wrong. Try again, or email hello@settled.social.';
+    }).catch(function (err) {
+      // Only the API's own messages are shown; network errors aren't for people.
+      msg.textContent = (err && err.fromApi && err.message) ||
+        'Something went wrong. Try again, or email hello@settled.social.';
       msg.classList.add('err');
     }).finally(function () {
+      clearTimeout(timer);
+      // Tokens are single use.
+      if (widgets.has(form)) turnstile.reset(widgets.get(form));
       btn.disabled = false;
       btn.textContent = label;
     });

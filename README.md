@@ -11,13 +11,19 @@ Static site for GitHub Pages. No build step: `index.html` + `assets/`.
 | `.nojekyll` | Skip Jekyll processing |
 | `assets/` | Logo, app screens, favicons, social share image (`og-image.png`, 1200×630) |
 
-## Updates sign-up form
+## Beta sign-up form
 
-Both email forms post to `https://formspree.io/f/YOUR_FORM_ID`. Until that ID is replaced,
-submitting opens a pre-filled email to hello@settled.social instead, so nothing breaks.
+Both forms post JSON to the Settled API's `POST /v1/waitlist` (contract in
+`settled-app/settled`: `docs/api/openapi.yaml`). Sign-ups land in the app's
+Postgres. Approving someone sends them a TestFlight invite
+(`php artisan settled:waitlist-invite`, see that repo's
+`docs/09-testing-guide.md`). The API allows this origin only through CORS,
+so the form only works when served from `settled.social`. The hidden `website`
+field is a honeypot; leave it hidden.
 
-To collect signups: create a free form at formspree.io, then replace `YOUR_FORM_ID`
-(it appears twice in `index.html`) with your form's ID.
+Bot check: Cloudflare Turnstile. Put the widget's **site key** (public) in
+`TURNSTILE_SITE_KEY` in `index.html`'s script; the secret key goes only in the
+API's Key Vault. Ship the site key before the API starts requiring tokens.
 
 ## Deploy
 
